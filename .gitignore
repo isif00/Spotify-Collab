@@ -1,4 +1,4 @@
-.virtualenv
+.venv
 
 # Django #
 *.log
@@ -120,3 +120,5 @@ packages/react-devtools-extensions/.tempUserDataDir
 packages/react-devtools-inline/dist
 packages/react-devtools-shell/dist
 packages/react-devtools-timeline/dist
+
+node_modules
