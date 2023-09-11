@@ -4,7 +4,7 @@ from .serializers import RoomSerializer, CreateRoomSerializer
 from .models import Room
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+import datetime
 
 # Create your views here.
 
@@ -19,14 +19,19 @@ class CreateRoomView(APIView):
 
     def post(self, request, format=None):
         print(request.data)
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
 
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            print("is valid ")
             guest_can_pause = serializer.data.get('guest_can_pause')
             votes_to_skip = serializer.data.get('votes_to_skip')
+
             host = self.request.session.session_key
             queryset = Room.objects.filter(host=host)
+            Room.objects.filter(host=host).delete()
+            Room.objects.filter(code="code").delete()
+
             if queryset.exists():
                 room = queryset[0]
                 room.guest_can_pause = guest_can_pause
@@ -36,7 +41,11 @@ class CreateRoomView(APIView):
             else:
                 room = Room(host=host, guest_can_pause=guest_can_pause,
                             votes_to_skip=votes_to_skip)
-                room.save()
+                try:
+                    room.save()
+                except Exception as e:
+                    print(f"Error saving room: {e}")
+
 
             return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
 

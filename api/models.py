@@ -6,12 +6,13 @@ import random
 
 def generate_unique_code():
     length = 6
-    while True :
+
+    while True:
         code = ''.join(random.choices(string.ascii_uppercase, k=length))
-        if Room.objects.filter(code=code).exists():
+        if Room.objects.filter(code=code).exists() == False:
             break
-    
-    return code
+        
+        return code
 
 class Room(models.Model):
     code = models.CharField(max_length=8, default=generate_unique_code, unique=True)
@@ -20,5 +21,3 @@ class Room(models.Model):
     votes_to_skip = models.IntegerField(null=False, default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     
-    def __str__(self) -> str:
-        return self.code
